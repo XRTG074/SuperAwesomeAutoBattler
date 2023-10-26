@@ -1,61 +1,73 @@
 using UnityEngine;
 
 
-namespace HeroControllerScript
+public class Hero : MonoBehaviour
 {
-    public class HeroControllerScript : MonoBehaviour
+
+    private double health = 100;
+
+    private double mana = 0;
+
+    private Animator HeroAnimator;
+
+    void Start()
     {
+        HeroAnimator = GetComponent<Animator>();
+    }
 
-        private Hero hero;
+    public void Attack(int AttackID)
+    {
+        System.Random rnd = new System.Random();
 
-        void Start()
+        switch (AttackID)
         {
-            hero = new Hero();
+            case 0:
+                HeroAnimator.SetTrigger("Attack1");
+                double ManaRecharge = rnd.Next(0, 20);
+                if (mana + ManaRecharge < 100)
+                {
+                    mana = mana + ManaRecharge;
+                }
+                break;
+            case 1:
+                if (mana >= 25)
+                {
+                    mana = mana - 25;
+                    HeroAnimator.SetTrigger("Attack2");
+                }
+                break;
+            case 2:
+                if (mana >= 60)
+                {
+                    mana = mana - 60;
+                    HeroAnimator.SetTrigger("Attack3");
+                }
+                break;
         }
     }
-    public class Hero
+
+    public void RecieveDamage(double Damage)
     {
-        public double health;
-
-        public double mana;
-
-        public Hero()
+        if (health - Damage > 0)
         {
-            health = 100;
-            mana = 0;
+            HeroAnimator.SetTrigger("Damaged");
+            health -= Damage;
+        }
+        else
+        {
+            HeroAnimator.SetTrigger("Die");
+            Time.timeScale = 0;
         }
     }
-    public class HeroAttack : Hero
-    {
-        public void Attack(int AttackID)
-        {
-            System.Random rnd = new System.Random();
 
-            switch (AttackID)
-            {
-                case 0:
-                    GameObject.Find("Hero").GetComponent<Animator>().SetTrigger("Attack1");
-                    double ManaRecharge = rnd.Next(0, 20);
-                    if (mana + ManaRecharge < 100)
-                    {
-                        mana = mana + ManaRecharge;
-                    }
-                    break;
-                case 1:
-                    if (mana >= 25)
-                    {
-                        mana = mana - 25;
-                        GameObject.Find("Hero").GetComponent<Animator>().SetTrigger("Attack2");
-                    }
-                    break;
-                case 2:
-                    if (mana >= 60)
-                    {
-                        mana = mana - 60;
-                        GameObject.Find("Hero").GetComponent<Animator>().SetTrigger("Attack3");
-                    }
-                    break;
-            }
-        }
+
+    private void EndDieAnimation()
+    {
+        Time.timeScale = 1;
+    }
+
+    public void GameOver()
+    {
+        GameObject.Find("GameCanvas").GetComponent<Animator>().SetTrigger("GameOver");
     }
 }
