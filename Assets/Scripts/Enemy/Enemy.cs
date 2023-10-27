@@ -14,21 +14,27 @@ public class Enemy : MonoBehaviour
 
     private System.Random rnd;
 
+    private EnemyControllerScript ECS;
+
+    private float attackDelay;
+
     void Start()
     {
+        ECS = GameObject.Find("GameCanvas").GetComponent<EnemyControllerScript>();
         hero = GameObject.Find("Hero").GetComponent<Hero>();
         rnd = new System.Random();
-        Invoke("Attack", 1.7f);
     }
 
-    public void CreateEnemy(int EnemyType)
+    public void CreateEnemy(int EnemyType, float attackDelay)
     {
         this.EnemyType = EnemyType;
+        this.attackDelay = attackDelay;
+        Invoke("Attack", 1.7f);
     }
 
     private void AttackDelay()
     {
-        Invoke("Attack", 3.27f);
+        Invoke("Attack", attackDelay);
     }
 
     public void Attack()
@@ -58,7 +64,8 @@ public class Enemy : MonoBehaviour
                 }
                 break;
             case 1:
-
+                GetComponent<Animator>().SetTrigger("Attack1");
+                AttackDelay();
                 break;
         }
     }
@@ -74,12 +81,29 @@ public class Enemy : MonoBehaviour
             case 1:
                 hero.RecieveDamage(rnd.Next(24, 37));
                 break;
+            case 2:
+                hero.RecieveDamage(rnd.Next(16, 22));
+                break;
         }
     }
 
     public void RecieveDamage(double Damage)
     {
+        if(Health - Damage <= 0)
+        {
+            GetComponent<Animator>().SetBool("Died", true);
+        }
+        else
+        {
+            GetComponent<Animator>().SetTrigger("Damaged");
+            Health -= Damage;
+        }
+    }
 
+    public void DieDelay()
+    {
+        ECS.OnEnemyDied(EnemyType);
+        Destroy(gameObject);
     }
 
     private void RunDelay()

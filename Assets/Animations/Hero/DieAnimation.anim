@@ -689,7 +689,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 2
+  - time: 4.383333
     functionName: GameOver
     data: 
     objectReferenceParameter: {fileID: 0}
